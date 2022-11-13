@@ -1,25 +1,11 @@
-import argparse
+import torch
 import pickle
+import argparse
+
 from pathlib import Path
 
-import torch
-
 from src.crafter_wrapper import Env
-
-
-class RandomAgent:
-    """An example Random Agent"""
-
-    def __init__(self, action_num) -> None:
-        self.action_num = action_num
-        # a uniformly random policy
-        self.policy = torch.distributions.Categorical(
-            torch.ones(action_num) / action_num
-        )
-
-    def act(self, observation):
-        """ Since this is a random agent the observation is not used."""
-        return self.policy.sample().item()
+from src.agents.random import RandomAgent
 
 
 def _save_stats(episodic_returns, crt_step, path):
@@ -36,9 +22,7 @@ def _save_stats(episodic_returns, crt_step, path):
 
 
 def eval(agent, env, crt_step, opt):
-    """ Use the greedy, deterministic policy, not the epsilon-greedy policy you
-    might use during training.
-    """
+    """Use the greedy, deterministic policy, not the epsilon-greedy policy you might use during training."""
     episodic_returns = []
     for _ in range(opt.eval_episodes):
         obs, done = env.reset(), False
@@ -56,22 +40,18 @@ def _info(opt):
         int(opt.logdir.split("/")[-1])
     except:
         print(
-            "Warning, logdir path should end in a number indicating a separate"
-            + "training run, else the results might be overwritten."
+            "Warning, logdir path should end in a number indicating a separate " +
+            "training run, else the results might be overwritten."
         )
     if Path(opt.logdir).exists():
         print("Warning! Logdir path exists, results can be corrupted.")
     print(f"Saving results in {opt.logdir}.")
-    print(
-        f"Observations are of dims ({opt.history_length},64,64),"
-        + "with values between 0 and 1."
-    )
+    print(f"Observations are of dims ({opt.history_length},64,64), with values between 0 and 1.")
 
 
 def main(opt):
     _info(opt)
-    #opt.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    opt.device = torch.device("cpu")
+    opt.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     env = Env("train", opt)
     eval_env = Env("eval", opt)
     agent = RandomAgent(env.action_space.n)
@@ -94,7 +74,8 @@ def main(opt):
 
 
 def get_options():
-    """ Configures a parser. Extend this with all the best performing hyperparameters of
+    """
+        Configures a parser. Extend this with all the best performing hyperparameters of
         your agent as defaults.
 
         For devel purposes feel free to change the number of training steps and

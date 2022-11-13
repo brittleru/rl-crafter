@@ -37,13 +37,13 @@ class Env:
                 torch.zeros(self._obs_dim, self._obs_dim, device=self.device)
             )
         obs = self.env.reset()
-        obs = torch.tensor(obs, dtype=torch.float32, device=self.device).div_(255)
+        obs = torch.tensor(obs, dtype=torch.float64, device=self.device).div_(255)
         self.state_buffer.append(obs)
         return torch.stack(list(self.state_buffer), 0)
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        obs = torch.tensor(obs, dtype=torch.float32, device=self.device).div_(255)
+        obs = torch.tensor(obs, dtype=torch.float64, device=self.device).div_(255)
         self.state_buffer.append(obs)
         return torch.stack(list(self.state_buffer), 0), reward, done, info
 
