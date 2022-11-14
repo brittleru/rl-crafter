@@ -8,8 +8,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from pathlib import Path
-from src.utils.string_utils import get_dir_name_as_img
 from src.utils.constant_builder import PathBuilder
+from src.utils.string_utils import get_dir_name_as_img
 
 
 def read_pkl(path):
@@ -42,6 +42,7 @@ def read_crafter_logs(in_dir, clip=True):
     # plot
     df = pd.concat(runs, ignore_index=True)
     sns.lineplot(x="step", y="avg_return", data=df)
+    plt.grid(visible=True)
     plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir.__str__())))
     plt.show()
 
@@ -50,6 +51,9 @@ if __name__ == "__main__":
     # Log dirs enums:
     # PathBuilder.RANDOM_AGENT_LOG_DIR
     # PathBuilder.DQN_AGENT_LOG_DIR
+    # PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR
+    # PathBuilder.DUELING_DQN_AGENT_LOG_DIR
+    # PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

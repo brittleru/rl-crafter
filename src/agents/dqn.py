@@ -1,6 +1,5 @@
 import torch
 import numpy as np
-import torch.nn as nn
 
 from src.networks.dqn import DeepQNetwork
 from src.agents.replay_buffer import ReplayBuffer
@@ -11,7 +10,7 @@ class DqnAgent(object):
     def __init__(
             self, epsilon, learning_rate, number_actions, input_sizes, memory_size, batch_size, device, gamma=0.92,
             epsilon_min=0.01, epsilon_dec=5e-7, replace=1000, algo: str = "dqnAgent", env_name: str = "crafter",
-            checkpoint_path=PathBuilder.DQN_AGENT_CHECKPOINT_DIR
+            checkpoint_path=PathBuilder.DQN_AGENT_CHECKPOINT_DIR, number_of_frames_to_concatenate: int = 4
     ):
         self.gamma = gamma
         self.epsilon = epsilon
@@ -28,7 +27,7 @@ class DqnAgent(object):
         self.checkpoint_path = checkpoint_path
         self.action_space = [i for i in range(number_actions)]
         self.learn_step_counter = 0
-        self.memory = ReplayBuffer(memory_size, input_sizes, number_actions, self.device)
+        self.memory = ReplayBuffer(memory_size, input_sizes, number_of_frames_to_concatenate, self.device)
         self.q_eval = DeepQNetwork(
             number_actions=self.number_actions, input_size=self.input_sizes, learning_rate=self.learning_rate,
             checkpoint_name=f"{self.env_name}_{self.algo}_q_eval", checkpoint_path=self.checkpoint_path,
@@ -41,12 +40,13 @@ class DqnAgent(object):
         )
 
     def act(self, observation):
-        if np.random.random() > self.epsilon:
-            state = torch.tensor([observation], dtype=torch.float64, device=self.device)
+        if torch.rand(1).item() > self.epsilon:
+            state = torch.stack((observation,))
             actions = self.q_eval.forward(state=state)
             action = torch.argmax(actions).item()
         else:
-            action = np.random.choice(self.action_space)
+            action = torch.randint(self.number_actions, (1,)).item()
+            # action = np.random.choice(self.action_space)
 
         return action
 
@@ -55,16 +55,19 @@ class DqnAgent(object):
 
     def take_memory(self):
         state, action, reward, state_, done = self.memory.sample_buffer(self.batch_size)
-        states = torch.tensor(state).to(self.device)
-        actions = torch.tensor(action).to(self.device)
-        rewards = torch.tensor(reward).to(self.device)
-        states_ = torch.tensor(state_).to(self.device)
-        dones = torch.tensor(done).to(self.device)
+        states = state
+        actions = action
+        rewards = reward
+        states_ = state_
+        dones = done
 
         return states, actions, rewards, states_, dones
 
     def decrease_epsilon(self):
-        self.epsilon = self.epsilon - self.epsilon_dec if self.epsilon > self.epsilon_min else self.epsilon_min
+        if self.epsilon > self.epsilon_min:
+            self.epsilon -= self.epsilon_dec
+        else:
+            self.epsilon = self.epsilon_min
 
     def replace_target_network(self):
         if self.learn_step_counter % self.replace_target_count == 0:
