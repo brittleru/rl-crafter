@@ -6,7 +6,8 @@ import torch.optim as optim
 
 
 class DeepQNetwork(nn.Module):
-    def __init__(self, number_actions, input_size, learning_rate, checkpoint_name, checkpoint_path, device):
+    def __init__(self, number_actions, input_size, learning_rate, checkpoint_name, checkpoint_path, device,
+                 epsilon_adam=1.5e-4):
         super(DeepQNetwork, self).__init__()
         self.device = device
         self.checkpoint_path = checkpoint_path
@@ -20,8 +21,8 @@ class DeepQNetwork(nn.Module):
         self.dense1 = nn.Linear(3136, 512, device=device)
         self.dense2 = nn.Linear(512, number_actions, device=device)
 
-        self.optimizer = optim.RMSprop(self.parameters(), lr=learning_rate)
-        self.loss = nn.MSELoss()
+        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate, eps=epsilon_adam)
+        self.loss = nn.CrossEntropyLoss()
         self.to(device)
 
     def infer_conv_sizes(self, input_size):

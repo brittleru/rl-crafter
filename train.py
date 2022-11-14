@@ -62,10 +62,10 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
         case AgentTypes.DQN:
             return DqnAgent(
                 epsilon=1,
-                learning_rate=1e-4,
+                learning_rate=0.0000625,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),  # check this if it's needed to be a tuple
-                memory_size=50_000,
+                memory_size=100_000,
                 batch_size=32,
                 device=device,
                 gamma=0.92,
