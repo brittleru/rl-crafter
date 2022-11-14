@@ -8,6 +8,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from pathlib import Path
+from src.utils.string_utils import get_dir_name_as_img
+from src.utils.constant_builder import PathBuilder
 
 
 def read_pkl(path):
@@ -40,22 +42,19 @@ def read_crafter_logs(in_dir, clip=True):
     # plot
     df = pd.concat(runs, ignore_index=True)
     sns.lineplot(x="step", y="avg_return", data=df)
-    # TODO: change figure plot name
-    plt.savefig(os.path.join(PLOT_EVAL_PATH, "demo_plot.png"))
+    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir.__str__())))
     plt.show()
 
 
 if __name__ == "__main__":
-    PROJECT_PATH = Path(__file__).resolve().parent.parent
-    ANALYSIS_PATH = os.path.join(PROJECT_PATH, "analysis")
-    PLOT_EVAL_PATH = os.path.join(ANALYSIS_PATH, "eval_plots")
-    LOGDIR_PATH = os.path.join(PROJECT_PATH, "logdir")
-    RANDOM_AGENT_PATH = os.path.join(LOGDIR_PATH, "random_agent")
+    # Log dirs enums:
+    # PathBuilder.RANDOM_AGENT_LOG_DIR
+    # PathBuilder.DQN_AGENT_LOG_DIR
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--logdir",
-        default=RANDOM_AGENT_PATH,
+        default=PathBuilder.DQN_AGENT_LOG_DIR,
         help="Path to the folder containing different runs.",
     )
     cfg = parser.parse_args()

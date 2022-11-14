@@ -23,7 +23,7 @@ class Env:
                 save_video=False,
                 save_episode=False,
             )
-        self._obs_dim = 64
+        self.obs_dim = 64
         # env = ResizeImage(env)
         env = GrayScale(env)
         self.env = env
@@ -34,7 +34,7 @@ class Env:
     def reset(self):
         for _ in range(self.window):
             self.state_buffer.append(
-                torch.zeros(self._obs_dim, self._obs_dim, device=self.device)
+                torch.zeros(self.obs_dim, self.obs_dim, device=self.device)
             )
         obs = self.env.reset()
         obs = torch.tensor(obs, dtype=torch.float64, device=self.device).div_(255)
