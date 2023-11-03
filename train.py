@@ -70,16 +70,16 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
             print(f"Using {AgentTypes.DQN} architecture")
             return DqnAgent(
                 epsilon=1,
-                learning_rate=0.0000625,
+                learning_rate=0.001,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=25_000,
+                memory_size=1_000,
                 batch_size=32,
                 device=device,
-                gamma=0.92,
+                gamma=0.99,
                 epsilon_min=0.1,
                 epsilon_dec=1e-5,
-                replace=1000,
+                replace=8,
                 checkpoint_path=checkpoint_path
             )
         case AgentTypes.DDQN:
@@ -89,10 +89,10 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
                 learning_rate=0.0000625,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=25_000,
+                memory_size=10_000,
                 batch_size=32,
                 device=device,
-                gamma=0.92,
+                gamma=0.99,
                 epsilon_min=0.1,
                 epsilon_dec=1e-5,
                 replace=1000,
@@ -105,10 +105,10 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
                 learning_rate=0.0000625,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=25_000,
+                memory_size=10_000,
                 batch_size=32,
                 device=device,
-                gamma=0.92,
+                gamma=0.99,
                 epsilon_min=0.1,
                 epsilon_dec=1e-5,
                 replace=1000,
@@ -258,8 +258,8 @@ if __name__ == "__main__":
 
     # Dueling DQN
     # AgentTypes.DUELING_DQN
-    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "0")
-    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "0")
+    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "1")
+    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "1")
 
     # Dueling Double DQN
     # AgentTypes.DUELING_DOUBLE_DQN
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     checkpoint_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "2")
 
     main(get_options(
-        agent_type=AgentTypes.DUELING_DOUBLE_DQN,
-        log_dir=log_duel_double_dqn_path,
-        checkpoint_dir=checkpoint_duel_double_dqn_path
+        agent_type=AgentTypes.DQN,
+        log_dir=log_dqn_path,
+        checkpoint_dir=checkpoint_dqn_path
     ))
