@@ -1,10 +1,15 @@
-import argparse
-import pathlib
+import os
 import pickle
+import pathlib
+import argparse
 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+
+from pathlib import Path
+from src.utils.constant_builder import PathBuilder
+from src.utils.string_utils import get_dir_name_as_img
 
 
 def read_pkl(path):
@@ -18,35 +23,42 @@ def read_pkl(path):
     return events
 
 
-def read_crafter_logs(indir, clip=True):
-    indir = pathlib.Path(indir)
+def read_crafter_logs(in_dir, clip=True):
+    in_dir = pathlib.Path(in_dir)
     # read the pickles
-    filenames = sorted(list(indir.glob("**/*/eval_stats.pkl")))
+    filenames = sorted(list(in_dir.glob("**\\*\\eval_stats.pkl")))
     runs = []
     for idx, fn in enumerate(filenames):
         df = pd.DataFrame(columns=["step", "avg_return"], data=read_pkl(fn))
         df["run"] = idx
         runs.append(df)
 
-    # some runs might not have finished and you might want to clip all of them
-    # to the shortest one.
+    # some runs might not have finished, and you might want to clip all of them to the shortest one.
     if clip:
         min_len = min([len(run) for run in runs])
         runs = [run[:min_len] for run in runs]
-        print(f"Clipped al runs to {min_len}.")
+        print(f"Clipped all runs to {min_len}.")
 
     # plot
     df = pd.concat(runs, ignore_index=True)
     sns.lineplot(x="step", y="avg_return", data=df)
-    plt.savefig("demo_plot.png")
+    plt.grid(visible=True)
+    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir.__str__())))
     plt.show()
 
 
 if __name__ == "__main__":
+    # Log dirs enums:
+    # PathBuilder.RANDOM_AGENT_LOG_DIR
+    # PathBuilder.DQN_AGENT_LOG_DIR
+    # PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR
+    # PathBuilder.DUELING_DQN_AGENT_LOG_DIR
+    # PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--logdir",
-        default="logdir/random_agent",
+        default=PathBuilder.DQN_AGENT_LOG_DIR,
         help="Path to the folder containing different runs.",
     )
     cfg = parser.parse_args()
