@@ -16,18 +16,23 @@ from src.crafter_wrapper import Env
 from src.agents.random import RandomAgent
 from src.utils.constant_builder import AgentTypes
 from src.utils.constant_builder import PathBuilder
-from src.utils.train_utils import display_readable_time
+from src.utils.train_utils import display_readable_time, get_readable_time
 
 
-def _save_stats(episodic_returns, crt_step, path):
+def _save_stats(episodic_returns, crt_step, path, eval_time: str | None = None):
     # save the evaluation stats
     episodic_returns = torch.tensor(episodic_returns)
     avg_return = episodic_returns.mean().item()
     min_return = episodic_returns.min().item()
     max_return = episodic_returns.max().item()
-    print(
-        f"[{crt_step:06d}] eval results: R/ep={avg_return:03.2f}, std={episodic_returns.std().item():03.2f}."
-    )
+
+    stats_info = f"[{crt_step:06d}] eval results: R/ep={avg_return:03.2f}, std={episodic_returns.std().item():03.2f}."
+
+    if eval_time is not None:
+        stats_info += f" eval time: {eval_time}"
+
+    print(stats_info)
+
     with open(path + "/eval_stats.pkl", "ab") as f:
         pickle.dump({"step": crt_step, "avg_return": avg_return, "min_return": min_return, "max_return": max_return}, f)
 
@@ -35,6 +40,7 @@ def _save_stats(episodic_returns, crt_step, path):
 def eval(agent, env, crt_step, opt):
     """Use the greedy, deterministic policy, not the epsilon-greedy policy you might use during training."""
     episodic_returns = []
+    eval_start_time = time()
     for _ in range(opt.eval_episodes):
         obs, done = env.reset(), False
         episodic_returns.append(0)
@@ -42,8 +48,9 @@ def eval(agent, env, crt_step, opt):
             action = agent.act(obs)
             obs, reward, done, info = env.step(action)
             episodic_returns[-1] += reward
+    eval_time = get_readable_time(eval_start_time, time())
 
-    _save_stats(episodic_returns, crt_step, opt.logdir)
+    _save_stats(episodic_returns, crt_step, opt.logdir, eval_time)
 
 
 def _info(opt):
@@ -57,11 +64,21 @@ def _info(opt):
     if Path(opt.logdir).exists():
         print("Warning! Logdir path exists, results can be corrupted.")
     print(f"Saving results in {opt.logdir}.")
-    print(f"Observations are of dims ({opt.history_length},64,64), with values between 0 and 1.")
+    print(f"Observations are of dims ({opt.history_length}, 64, 64), with values between 0 and 1.")
 
 
 def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
                 checkpoint_path: str = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "0")):
+    epsilon = 1
+    learning_rate = 3e-4
+    memory_size = 5_000
+    batch_size = 32
+    gamma = 0.99
+    epsilon_min = 0.1
+    epsilon_dec = 1e-5
+    replace = 2_000
+    hidden_units_conv = 32
+
     match agent_type:
         case AgentTypes.RANDOM:
             print(f"Using {AgentTypes.RANDOM} architecture")
@@ -69,65 +86,69 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
         case AgentTypes.DQN:
             print(f"Using {AgentTypes.DQN} architecture")
             return DqnAgent(
-                epsilon=1,
-                learning_rate=0.001,
+                epsilon=epsilon,
+                learning_rate=learning_rate,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=1_000,
-                batch_size=32,
+                memory_size=memory_size,
+                batch_size=batch_size,
                 device=device,
-                gamma=0.99,
-                epsilon_min=0.1,
-                epsilon_dec=1e-5,
-                replace=8,
+                gamma=gamma,
+                epsilon_min=epsilon_min,
+                epsilon_dec=epsilon_dec,
+                replace=replace,
+                hidden_units_conv=hidden_units_conv,
                 checkpoint_path=checkpoint_path
             )
         case AgentTypes.DDQN:
             print(f"Using {AgentTypes.DDQN} architecture")
             return DoubleDqnAgent(
-                epsilon=1,
-                learning_rate=0.0000625,
+                epsilon=epsilon,
+                learning_rate=learning_rate,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=10_000,
-                batch_size=32,
+                memory_size=memory_size,
+                batch_size=batch_size,
                 device=device,
-                gamma=0.99,
-                epsilon_min=0.1,
-                epsilon_dec=1e-5,
-                replace=1000,
+                gamma=gamma,
+                epsilon_min=epsilon_min,
+                epsilon_dec=epsilon_dec,
+                replace=replace,
+                hidden_units_conv=hidden_units_conv,
                 checkpoint_path=checkpoint_path
             )
         case AgentTypes.DUELING_DQN:
             print(f"Using {AgentTypes.DUELING_DQN} architecture")
             return DuelingDqnAgent(
-                epsilon=1,
-                learning_rate=0.0000625,
+                epsilon=epsilon,
+                learning_rate=learning_rate,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=10_000,
-                batch_size=32,
+                memory_size=memory_size,
+                batch_size=batch_size,
                 device=device,
-                gamma=0.99,
-                epsilon_min=0.1,
-                epsilon_dec=1e-5,
-                replace=1000,
+                gamma=gamma,
+                epsilon_min=epsilon_min,
+                epsilon_dec=epsilon_dec,
+                replace=replace,
+                hidden_units_conv=hidden_units_conv,
                 checkpoint_path=checkpoint_path
             )
         case AgentTypes.DUELING_DOUBLE_DQN:
             print(f"Using {AgentTypes.DUELING_DOUBLE_DQN} architecture")
             return DuelingDoubleDqnAgent(
-                epsilon=1,
-                learning_rate=0.0000625,
+                epsilon=epsilon,
+                learning_rate=learning_rate,
                 number_actions=environment.action_space.n,
                 input_sizes=(environment.obs_dim, environment.obs_dim),
-                memory_size=25_000,
-                batch_size=32,
+                memory_size=memory_size,
+                batch_size=batch_size,
                 device=device,
-                gamma=0.92,
-                epsilon_min=0.1,
-                epsilon_dec=1e-5,
-                replace=1000,
+                gamma=gamma,
+                epsilon_min=epsilon_min,
+                epsilon_dec=epsilon_dec,
+                replace=replace,
+                hidden_units_conv=hidden_units_conv,
                 checkpoint_path=checkpoint_path
             )
         case AgentTypes.RAINBOW:
@@ -138,6 +159,8 @@ def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
 def main(opt):
     _info(opt)
     opt.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {str(opt.device).upper()} device...")
+
     env = Env("train", opt)
     eval_env = Env("eval", opt)
     agent = build_agent(environment=env, device=opt.device, agent_type=opt.agent_type, checkpoint_path=opt.check_dir)
@@ -147,6 +170,9 @@ def main(opt):
     score_hist, epsilon_hist, step_hist = [], [], []
     start_time = time()
     score = 0
+    print("\nStarting training...")
+    start_percent_eval_total_time = time()
+
     while step_cnt < opt.steps or not done:
         if done:
             ep_cnt += 1
@@ -164,7 +190,10 @@ def main(opt):
         step_cnt += 1
 
         if step_cnt % opt.eval_interval == 0:
-            print(f"[{step_cnt:06d}] At {(100.0 * step_cnt / opt.steps):03.2f}%")
+            end_percent_eval_total_time = time()
+            percent_eval_total_time = get_readable_time(start_percent_eval_total_time, end_percent_eval_total_time)
+            print(f"[{step_cnt:06d}] At {(100.0 * step_cnt / opt.steps):03.2f}%. "
+                  f"Time for {opt.eval_interval} steps: {percent_eval_total_time}")
 
         if opt.agent_type is not AgentTypes.RANDOM:
             epsilon_hist.append(agent.epsilon)
@@ -172,7 +201,12 @@ def main(opt):
         score_hist.append(score)
         # evaluate once in a while
         if step_cnt % opt.eval_interval == 0:
+            if opt.agent_type is not AgentTypes.RANDOM:
+                agent.set_eval()
             eval(agent, eval_env, step_cnt, opt)
+            if opt.agent_type is not AgentTypes.RANDOM:
+                agent.set_train()
+            start_percent_eval_total_time = time()
 
     display_readable_time(start_time, time())
     plot_rewards(steps=step_hist, scores=score_hist, network_type=opt.agent_type)
@@ -189,7 +223,7 @@ def get_options(
         Configures a parser. Extend this with all the best performing hyperparameters of
         your agent as defaults.
 
-        For devel purposes feel free to change the number of training steps and
+        For development purposes feel free to change the number of training steps and
         the evaluation interval.
 
         The default agent is DQN.
@@ -200,7 +234,7 @@ def get_options(
         "--steps",
         type=int,
         metavar="STEPS",
-        default=1_000_000,
+        default=100_000,
         help="Total number of training steps.",
     )
     parser.add_argument(
@@ -213,7 +247,7 @@ def get_options(
     parser.add_argument(
         "--eval-interval",
         type=int,
-        default=100_000,
+        default=5_000,
         metavar="STEPS",
         help="Number of training steps between evaluations",
     )
@@ -253,13 +287,13 @@ if __name__ == "__main__":
 
     # Double DQN
     # AgentTypes.DDQN
-    log_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR, "0")
-    checkpoint_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "0")
+    log_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR, "1")
+    checkpoint_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "1")
 
     # Dueling DQN
     # AgentTypes.DUELING_DQN
-    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "1")
-    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "1")
+    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "0")
+    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "0")
 
     # Dueling Double DQN
     # AgentTypes.DUELING_DOUBLE_DQN
@@ -267,7 +301,37 @@ if __name__ == "__main__":
     checkpoint_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "2")
 
     main(get_options(
-        agent_type=AgentTypes.DQN,
-        log_dir=log_dqn_path,
-        checkpoint_dir=checkpoint_dqn_path
+        agent_type=AgentTypes.DDQN,
+        log_dir=log_ddqn_path,
+        checkpoint_dir=checkpoint_ddqn_path
     ))
+
+    ## Train multiple times
+    num_times_to_train = 2
+    agent = AgentTypes.DUELING_DQN
+    log_dir = PathBuilder.DUELING_DQN_AGENT_LOG_DIR
+    ckpt_dir = PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR
+    for i in range(num_times_to_train):
+        log_dqn_path = os.path.join(log_dir, f"{i}")
+        checkpoint_dqn_path = os.path.join(ckpt_dir, f"{i}")
+        main(get_options(
+            agent_type=agent,
+            log_dir=log_dqn_path,
+            checkpoint_dir=checkpoint_dqn_path
+        ))
+        print(f"Finished training the model {agent}_{i}\n\n")
+
+    ## Train multiple times
+    num_times_to_train = 2
+    agent = AgentTypes.DUELING_DOUBLE_DQN
+    log_dir = PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
+    ckpt_dir = PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR
+    for i in range(num_times_to_train):
+        log_dqn_path = os.path.join(log_dir, f"{i}")
+        checkpoint_dqn_path = os.path.join(ckpt_dir, f"{i}")
+        main(get_options(
+            agent_type=agent,
+            log_dir=log_dqn_path,
+            checkpoint_dir=checkpoint_dqn_path
+        ))
+        print(f"Finished training the model {agent}_{i}\n\n")
