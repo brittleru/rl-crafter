@@ -173,6 +173,7 @@ def main(opt):
     env = Env("train", opt)
     eval_env = Env("eval", opt)
     agent = build_agent(environment=env, device=opt.device, agent_type=opt.agent_type, checkpoint_path=opt.check_dir)
+    model_number = os.path.basename(opt.check_dir)
 
     # main loop
     ep_cnt, step_cnt, done = 0, 0, True
@@ -218,9 +219,9 @@ def main(opt):
             start_percent_eval_total_time = time()
 
     display_readable_time(start_time, time())
-    plot_rewards(steps=step_hist, scores=score_hist, network_type=opt.agent_type)
+    plot_rewards(steps=step_hist, scores=score_hist, network_type=opt.agent_type, model_num=model_number)
     if opt.agent_type is not AgentTypes.RANDOM:
-        plot_epsilon(steps=step_hist, epsilons=epsilon_hist, network_type=opt.agent_type)
+        plot_epsilon(steps=step_hist, epsilons=epsilon_hist, network_type=opt.agent_type, model_num=model_number)
     agent.save_models()
 
 
