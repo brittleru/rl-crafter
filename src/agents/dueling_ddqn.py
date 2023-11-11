@@ -1,8 +1,7 @@
 import torch
-import numpy as np
 
-from src.utils.constant_builder import PathBuilder
 from src.agents.dueling_dqn import DuelingDqnAgent
+from src.utils.constant_builder import PathBuilder
 
 
 class DuelingDoubleDqnAgent(DuelingDqnAgent):

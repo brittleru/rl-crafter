@@ -1,22 +1,28 @@
+import argparse
+import json
 import os.path
+import pickle
+from pathlib import Path
+from time import time
 
 import torch
-import pickle
-import argparse
 
-from time import time
-from pathlib import Path
-
-from src.utils.plot_utils import plot_rewards, plot_epsilon
-from src.agents.dqn import DqnAgent
 from src.agents.ddqn import DoubleDqnAgent
-from src.agents.dueling_dqn import DuelingDqnAgent
+from src.agents.dqn import DqnAgent
 from src.agents.dueling_ddqn import DuelingDoubleDqnAgent
-from src.crafter_wrapper import Env
+from src.agents.dueling_dqn import DuelingDqnAgent
 from src.agents.random import RandomAgent
+from src.crafter_wrapper import Env
 from src.utils.constant_builder import AgentTypes
 from src.utils.constant_builder import PathBuilder
+from src.utils.plot_utils import plot_rewards, plot_epsilon
 from src.utils.train_utils import display_readable_time, get_readable_time
+
+
+def load_hyperparameters(file_path):
+    with open(file_path, 'r') as file:
+        hyperparameters = json.load(file)
+    return hyperparameters
 
 
 def _save_stats(episodic_returns, crt_step, path, eval_time: str | None = None):
@@ -67,17 +73,20 @@ def _info(opt):
     print(f"Observations are of dims ({opt.history_length}, 64, 64), with values between 0 and 1.")
 
 
-def build_agent(environment: Env, device, agent_type: str = AgentTypes.DQN,
-                checkpoint_path: str = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "0")):
-    epsilon = 1
-    learning_rate = 3e-4
-    memory_size = 5_000
-    batch_size = 32
-    gamma = 0.99
-    epsilon_min = 0.1
-    epsilon_dec = 1e-5
-    replace = 2_000
-    hidden_units_conv = 32
+def build_agent(
+        environment: Env, device, agent_type: str = AgentTypes.DQN,
+        checkpoint_path: str = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "99")
+):
+    hyper_parameters = load_hyperparameters(PathBuilder.HYPER_PARAMETERS_PATH)
+    epsilon = hyper_parameters['epsilon']
+    learning_rate = hyper_parameters['learning_rate']
+    memory_size = hyper_parameters['memory_size']
+    batch_size = hyper_parameters['batch_size']
+    gamma = hyper_parameters['gamma']
+    epsilon_min = hyper_parameters['epsilon_min']
+    epsilon_dec = hyper_parameters['epsilon_dec']
+    replace = hyper_parameters['replace']
+    hidden_units_conv = hyper_parameters['hidden_units_conv']
 
     match agent_type:
         case AgentTypes.RANDOM:
@@ -212,12 +221,12 @@ def main(opt):
     plot_rewards(steps=step_hist, scores=score_hist, network_type=opt.agent_type)
     if opt.agent_type is not AgentTypes.RANDOM:
         plot_epsilon(steps=step_hist, epsilons=epsilon_hist, network_type=opt.agent_type)
-    # agent.save_models()
+    agent.save_models()
 
 
 def get_options(
-        agent_type: str = AgentTypes.DQN, log_dir: str = os.path.join(PathBuilder.DQN_AGENT_LOG_DIR, "0"),
-        checkpoint_dir: str = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "0")
+        agent_type: str = AgentTypes.DQN, log_dir: str = os.path.join(PathBuilder.DQN_AGENT_LOG_DIR, "99"),
+        checkpoint_dir: str = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "99")
 ):
     """
         Configures a parser. Extend this with all the best performing hyperparameters of
@@ -277,61 +286,30 @@ def get_options(
 if __name__ == "__main__":
     # RANDOM
     # AgentTypes.RANDOM
-    log_random_path = os.path.join(PathBuilder.RANDOM_AGENT_LOG_DIR, "0")
-
+    log_random_path = os.path.join(PathBuilder.RANDOM_AGENT_LOG_DIR, "99")
 
     # DQN
     # AgentTypes.DQN
-    log_dqn_path = os.path.join(PathBuilder.DQN_AGENT_LOG_DIR, "0")
-    checkpoint_dqn_path = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "0")
+    log_dqn_path = os.path.join(PathBuilder.DQN_AGENT_LOG_DIR, "99")
+    checkpoint_dqn_path = os.path.join(PathBuilder.DQN_AGENT_CHECKPOINT_DIR, "99")
 
     # Double DQN
     # AgentTypes.DDQN
-    log_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR, "1")
-    checkpoint_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "1")
+    log_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR, "99")
+    checkpoint_ddqn_path = os.path.join(PathBuilder.DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "99")
 
     # Dueling DQN
     # AgentTypes.DUELING_DQN
-    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "0")
-    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "0")
+    log_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_LOG_DIR, "99")
+    checkpoint_duel_dqn_path = os.path.join(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR, "99")
 
     # Dueling Double DQN
     # AgentTypes.DUELING_DOUBLE_DQN
-    log_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR, "2")
-    checkpoint_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "2")
+    log_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR, "99")
+    checkpoint_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "99")
 
     main(get_options(
-        agent_type=AgentTypes.DDQN,
-        log_dir=log_ddqn_path,
-        checkpoint_dir=checkpoint_ddqn_path
+        agent_type=AgentTypes.DQN,
+        log_dir=log_dqn_path,
+        checkpoint_dir=checkpoint_dqn_path
     ))
-
-    ## Train multiple times
-    num_times_to_train = 2
-    agent = AgentTypes.DUELING_DQN
-    log_dir = PathBuilder.DUELING_DQN_AGENT_LOG_DIR
-    ckpt_dir = PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR
-    for i in range(num_times_to_train):
-        log_dqn_path = os.path.join(log_dir, f"{i}")
-        checkpoint_dqn_path = os.path.join(ckpt_dir, f"{i}")
-        main(get_options(
-            agent_type=agent,
-            log_dir=log_dqn_path,
-            checkpoint_dir=checkpoint_dqn_path
-        ))
-        print(f"Finished training the model {agent}_{i}\n\n")
-
-    ## Train multiple times
-    num_times_to_train = 2
-    agent = AgentTypes.DUELING_DOUBLE_DQN
-    log_dir = PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
-    ckpt_dir = PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR
-    for i in range(num_times_to_train):
-        log_dqn_path = os.path.join(log_dir, f"{i}")
-        checkpoint_dqn_path = os.path.join(ckpt_dir, f"{i}")
-        main(get_options(
-            agent_type=agent,
-            log_dir=log_dqn_path,
-            checkpoint_dir=checkpoint_dqn_path
-        ))
-        print(f"Finished training the model {agent}_{i}\n\n")

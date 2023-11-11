@@ -40,6 +40,8 @@ class PathBuilder(Const):
     DUELING_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "duelingdqn_agent")
     DUELING_DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "dueling_doubledqn_agent")
 
+    HYPER_PARAMETERS_PATH: Final[str] = os.path.join(PROJECT_DIR, "hyperparameters.json")
+
 
 if __name__ == "__main__":
     print(PathBuilder.PROJECT_DIR)

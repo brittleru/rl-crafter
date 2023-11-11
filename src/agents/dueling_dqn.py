@@ -1,8 +1,8 @@
 import torch
 
 from src.agents.dqn import DqnAgent
-from src.utils.constant_builder import PathBuilder
 from src.networks.dueling_dqn import DuelingDeepQNetwork
+from src.utils.constant_builder import PathBuilder
 
 
 class DuelingDqnAgent(DqnAgent):

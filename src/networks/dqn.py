@@ -1,9 +1,8 @@
 import os
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as fun
 import torch.optim as optim
-
 from torchinfo import summary
 
 
@@ -22,7 +21,6 @@ class DeepQNetwork(nn.Module):
         self.hidden = hidden_units_conv
 
         self.convolution_block_in = nn.Sequential(
-            # TODO: check if in channels should be 3 or 4
             nn.Conv2d(
                 in_channels=4, out_channels=self.hidden, kernel_size=3, device=device, dtype=torch.float64
             ),
@@ -53,7 +51,6 @@ class DeepQNetwork(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            # nn.Linear(in_features=linear_input_size, out_features=number_actions, device=device, dtype=torch.float64),
             nn.Linear(in_features=linear_input_size, out_features=128, device=device, dtype=torch.float64),
             nn.ReLU(),
             nn.Dropout(p=0.5),
@@ -61,7 +58,7 @@ class DeepQNetwork(nn.Module):
         )
 
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate, eps=epsilon_adam)
-        self.loss = nn.HuberLoss()  # TODO: idk if HuberLoss or CrossEntropyLoss
+        self.loss = nn.HuberLoss()
         self.to(device)
 
     def infer_conv_sizes(self, input_size):

@@ -1,8 +1,7 @@
 import torch
-import numpy as np
 
-from src.networks.dqn import DeepQNetwork
 from src.agents.replay_buffer import ReplayBuffer
+from src.networks.dqn import DeepQNetwork
 from src.utils.constant_builder import PathBuilder
 
 
@@ -38,7 +37,7 @@ class DqnAgent(object):
         self.q_next = DeepQNetwork(
             number_actions=self.number_actions, input_size=self.input_sizes, learning_rate=self.learning_rate,
             checkpoint_name=f"{self.env_name}_{self.algo}_q_next", checkpoint_path=self.checkpoint_path,
-            device=self.device,  epsilon_adam=1e-4, hidden_units_conv=hidden_units_conv
+            device=self.device, epsilon_adam=1e-4, hidden_units_conv=hidden_units_conv
         )
 
     @torch.inference_mode()
@@ -49,7 +48,6 @@ class DqnAgent(object):
             action = torch.argmax(actions).item()
         else:
             action = torch.randint(self.number_actions, (1,)).item()
-            # action = np.random.choice(self.action_space)
 
         return action
 

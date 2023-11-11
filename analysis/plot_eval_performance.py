@@ -1,13 +1,12 @@
-import os
-import pickle
-import pathlib
 import argparse
+import os
+import pathlib
+import pickle
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 
-from pathlib import Path
 from src.utils.constant_builder import PathBuilder
 from src.utils.string_utils import get_dir_name_as_img, get_dirs_name_as_img
 
@@ -47,7 +46,7 @@ def read_crafter_logs(in_dir, clip=True):
     plt.show()
 
 
-def compare_model_logs(in_dirs, clip=True):
+def compare_model_logs(in_dirs: list, clip=True):
     model_names = []
     agent_colors = {}
 
@@ -63,13 +62,11 @@ def compare_model_logs(in_dirs, clip=True):
             df["run"] = idx
             runs.append(df)
 
-        # some runs might not have finished, and you might want to clip all of them to the shortest one.
         if clip:
             min_len = min([len(run) for run in runs])
             runs = [run[:min_len] for run in runs]
             print(f"Clipped all runs to {min_len}.")
 
-        # plot
         df = pd.concat(runs, ignore_index=True)
         line = sns.lineplot(x="step", y="avg_return", data=df)
         line_color = line.get_lines()[-1].get_color()
@@ -84,7 +81,7 @@ def compare_model_logs(in_dirs, clip=True):
     plt.show()
 
 
-if __name__ == "__main__":
+def get_options():
     """
     Log dirs enums:
         PathBuilder.RANDOM_AGENT_LOG_DIR
@@ -93,23 +90,37 @@ if __name__ == "__main__":
         PathBuilder.DUELING_DQN_AGENT_LOG_DIR
         PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
     """
-    # TODO: add this as an argparse stuff
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--logdir",
-        default=PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR,
+        type=str,
+        default=PathBuilder.DQN_AGENT_LOG_DIR,
         help="Path to the folder containing different runs.",
     )
-    cfg = parser.parse_args()
 
-    read_crafter_logs(cfg.logdir)
+    parser.add_argument(
+        "--do-comparison",
+        type=bool,
+        default=False,
+        help="Flag to choose if plot the all the trained models."
+    )
+
+    return parser.parse_args()
 
 
-    # dirs = [
-    #     PathBuilder.RANDOM_AGENT_LOG_DIR,
-    #     PathBuilder.DQN_AGENT_LOG_DIR,
-    #     PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR,
-    #     PathBuilder.DUELING_DQN_AGENT_LOG_DIR,
-    #     PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
-    # ]
-    # compare_model_logs(dirs)
+def run_eval(options):
+    read_crafter_logs(options.logdir)
+
+    if options.do_comparison:
+        dirs = [
+            PathBuilder.RANDOM_AGENT_LOG_DIR,
+            PathBuilder.DQN_AGENT_LOG_DIR,
+            PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR,
+            PathBuilder.DUELING_DQN_AGENT_LOG_DIR,
+            PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
+        ]
+        compare_model_logs(dirs)
+
+
+if __name__ == "__main__":
+    run_eval(get_options())

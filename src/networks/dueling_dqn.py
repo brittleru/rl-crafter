@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as fun
 from torch import optim
 
 from src.networks.dqn import DeepQNetwork
