@@ -89,6 +89,7 @@ def get_options():
         PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR
         PathBuilder.DUELING_DQN_AGENT_LOG_DIR
         PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
+        PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(

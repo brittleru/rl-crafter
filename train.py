@@ -11,6 +11,7 @@ from src.agents.ddqn import DoubleDqnAgent
 from src.agents.dqn import DqnAgent
 from src.agents.dueling_ddqn import DuelingDoubleDqnAgent
 from src.agents.dueling_dqn import DuelingDqnAgent
+from src.agents.rainbow_dqn import RainbowDqnAgent
 from src.agents.random import RandomAgent
 from src.crafter_wrapper import Env
 from src.utils.constant_builder import AgentTypes
@@ -26,7 +27,7 @@ def load_hyperparameters(file_path):
 
 
 def _save_stats(episodic_returns, crt_step, path, eval_time: str | None = None):
-    # save the evaluation stats
+    """ Save the evaluation stats """
     episodic_returns = torch.tensor(episodic_returns)
     avg_return = episodic_returns.mean().item()
     min_return = episodic_returns.min().item()
@@ -162,7 +163,21 @@ def build_agent(
             )
         case AgentTypes.RAINBOW:
             print(f"Using {AgentTypes.RAINBOW} architecture")
-            raise NotImplementedError(f"{AgentTypes.RAINBOW} not implemented yet")
+            return RainbowDqnAgent(
+                epsilon=epsilon,
+                learning_rate=learning_rate,
+                number_actions=environment.action_space.n,
+                input_sizes=(environment.obs_dim, environment.obs_dim),
+                memory_size=memory_size,
+                batch_size=batch_size,
+                device=device,
+                gamma=gamma,
+                epsilon_min=epsilon_min,
+                epsilon_dec=epsilon_dec,
+                replace=replace,
+                hidden_units_conv=hidden_units_conv,
+                checkpoint_path=checkpoint_path
+            )
 
 
 def main(opt):
@@ -308,6 +323,11 @@ if __name__ == "__main__":
     # AgentTypes.DUELING_DOUBLE_DQN
     log_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR, "99")
     checkpoint_duel_double_dqn_path = os.path.join(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR, "99")
+
+    # Rainbow DQN
+    # AgentTypes.RAINBOW
+    log_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR, "99")
+    checkpoint_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR, "99")
 
     main(get_options(
         agent_type=AgentTypes.DQN,

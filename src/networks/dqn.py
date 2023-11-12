@@ -69,11 +69,11 @@ class DeepQNetwork(nn.Module):
 
     def save_checkpoint(self):
         print(f'{10 * "="} Saving {self.__class__.__name__} checkpoint {10 * "="}')
-        torch.save(self.state_dict(), self.checkpoint_file_path)
+        torch.save(self.state_dict(), f"{self.checkpoint_file_path}.pt")
 
     def load_checkpoint(self):
         print(f'{10 * "="} Loading {self.__class__.__name__} checkpoint {10 * "="}')
-        self.load_state_dict(torch.load(self.checkpoint_file_path))
+        self.load_state_dict(torch.load(f"{self.checkpoint_file_path}.pt"))
 
     def view_model(self):
         summary(self)

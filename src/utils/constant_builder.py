@@ -32,6 +32,7 @@ class PathBuilder(Const):
     DOUBLE_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "doubledqn_agent")
     DUELING_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "duelingdqn_agent")
     DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "dueling_doubledqn_agent")
+    RAINBOW_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "rainbow_agent")
 
     LOGDIR_DIR: Final[str] = os.path.join(PROJECT_DIR, "logdir")
     RANDOM_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "random_agent")
@@ -39,6 +40,7 @@ class PathBuilder(Const):
     DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "doubledqn_agent")
     DUELING_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "duelingdqn_agent")
     DUELING_DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "dueling_doubledqn_agent")
+    RAINBOW_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "rainbow_agent")
 
     HYPER_PARAMETERS_PATH: Final[str] = os.path.join(PROJECT_DIR, "hyperparameters.json")
 
@@ -58,3 +60,7 @@ if __name__ == "__main__":
     print(PathBuilder.DUELING_DQN_AGENT_CHECKPOINT_DIR)
     print(PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR)
     print(PathBuilder.DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR)
+    print(PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR)
+
+    print(PathBuilder.HYPER_PARAMETERS_PATH)
