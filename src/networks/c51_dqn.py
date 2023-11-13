@@ -36,9 +36,16 @@ class C51DQN(DeepQNetwork):
         )
 
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate, eps=epsilon_adam)
-        self.loss = nn.HuberLoss()
         self.supports = torch.linspace(0, 1, num_atoms, device=device, dtype=torch.float64)
         self.to(device)
+
+    @staticmethod
+    def c51_loss(target_distribution, predicted_distribution):
+        """Computes the KL divergence between target and predicted distributions."""
+        kl_divergence = torch.sum(target_distribution * torch.log(target_distribution / predicted_distribution), dim=1)
+        loss = torch.mean(kl_divergence)
+
+        return loss
 
     def forward(self, state):
         output = self.convolution_block_intermediate(self.convolution_block_in(state))

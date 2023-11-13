@@ -190,6 +190,9 @@ def main(opt):
     agent = build_agent(environment=env, device=opt.device, agent_type=opt.agent_type, checkpoint_path=opt.check_dir)
     model_number = os.path.basename(opt.check_dir)
 
+    if opt.agent_type is not AgentTypes.RANDOM:
+        agent.show_architecture()
+
     # main loop
     ep_cnt, step_cnt, done = 0, 0, True
     score_hist, epsilon_hist, step_hist = [], [], []

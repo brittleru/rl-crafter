@@ -236,3 +236,4 @@ cython_debug/
 # Python files
 *.pt
 *.pth
+*.zip

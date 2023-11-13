@@ -25,10 +25,12 @@ backbone neural network architectures such as:
 * DDQN (Double DQN)
 * Dueling DQN
 * Dueling DDQN 
+* Rainbow C51DQN
 
 ## Results
 To visualize some results we chose to plot the average episodic reward for two or three seeds, the success rate for 
-each achievement of each agent as a table and as a histogram. (TODO: see if add some achievement curves) 
+each achievement of each agent as a table and as a histogram. (TODO: see if add some achievement curves and SUCCESS 
+RATES WITHOUT REWARDS table) 
 
 (TODO: plot some visualization of the results)
 

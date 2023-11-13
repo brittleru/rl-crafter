@@ -5,15 +5,6 @@ from typing import Final
 from src.utils.const import Const
 
 
-class AgentTypes(Const):
-    RANDOM: str = "random"
-    DQN: str = "DQN"
-    DDQN: str = "DDQN"
-    RAINBOW: str = "RAINBOW"
-    DUELING_DQN: str = "DUELING-DQN"
-    DUELING_DOUBLE_DQN: str = "DUELING-DOUBLE-DQN"
-
-
 class PathBuilder(Const):
     """
     This class creates all the path variables that are needed for this project. \n
@@ -26,6 +17,8 @@ class PathBuilder(Const):
     ANALYSIS_DIR: Final[str] = os.path.join(PROJECT_DIR, "analysis")
     EVAL_PLOTS_DIR: Final[str] = os.path.join(ANALYSIS_DIR, "eval_plots")
     TRAIN_PLOTS_DIR: Final[str] = os.path.join(ANALYSIS_DIR, "train_plots")
+    SCORE_PLOTS_DIR: Final[str] = os.path.join(ANALYSIS_DIR, "score_plots")
+    ACHIEVEMENT_PLOTS_DIR: Final[str] = os.path.join(ANALYSIS_DIR, "achievement_plots")
 
     CHECKPOINTS_DIR: Final[str] = os.path.join(PROJECT_DIR, "checkpoints")
     DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "dqn_agent")
@@ -43,6 +36,24 @@ class PathBuilder(Const):
     RAINBOW_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "rainbow_agent")
 
     HYPER_PARAMETERS_PATH: Final[str] = os.path.join(PROJECT_DIR, "hyperparameters.json")
+
+
+class AgentTypes(Const):
+    RANDOM: str = "random"
+    DQN: str = "DQN"
+    DDQN: str = "DDQN"
+    RAINBOW: str = "RAINBOW"
+    DUELING_DQN: str = "DUELING-DQN"
+    DUELING_DOUBLE_DQN: str = "DUELING-DOUBLE-DQN"
+
+    PATH_TO_NAME: dict = {
+        PathBuilder.RANDOM_AGENT_LOG_DIR: RANDOM,
+        PathBuilder.DQN_AGENT_LOG_DIR: DQN,
+        PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR: DDQN,
+        PathBuilder.DUELING_DQN_AGENT_LOG_DIR: DUELING_DQN,
+        PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR: DUELING_DOUBLE_DQN,
+        PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR: RAINBOW
+    }
 
 
 if __name__ == "__main__":
@@ -64,3 +75,4 @@ if __name__ == "__main__":
     print(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR)
 
     print(PathBuilder.HYPER_PARAMETERS_PATH)
+    print(AgentTypes.PATH_TO_NAME)

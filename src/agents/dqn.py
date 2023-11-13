@@ -33,7 +33,6 @@ class DqnAgent(object):
             checkpoint_name=f"{self.env_name}_{self.algo}_q_eval", checkpoint_path=self.checkpoint_path,
             device=self.device, epsilon_adam=1e-4, hidden_units_conv=hidden_units_conv
         )
-        self.q_eval.view_model()
         self.q_next = DeepQNetwork(
             number_actions=self.number_actions, input_size=self.input_sizes, learning_rate=self.learning_rate,
             checkpoint_name=f"{self.env_name}_{self.algo}_q_next", checkpoint_path=self.checkpoint_path,
@@ -88,6 +87,9 @@ class DqnAgent(object):
 
     def set_eval(self) -> None:
         self.q_eval.eval()
+
+    def show_architecture(self):
+        self.q_eval.view_model()
 
     def learn(self):
         if self.memory.memory_counter < self.batch_size:

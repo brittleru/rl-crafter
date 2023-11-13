@@ -69,7 +69,7 @@ class RainbowDqnAgent(DuelingDqnAgent):
         dones = dones.unsqueeze(1)
         q_target = rewards + self.gamma * q_next_values * (1 - dones.float())
 
-        loss = self.q_eval.loss(q_target, q_pred).to(self.device)
+        loss = self.q_eval.c51_loss(q_target, q_pred).to(self.device)
         self.q_eval.optimizer.zero_grad()
         loss.backward()
         self.q_eval.optimizer.step()

@@ -102,7 +102,7 @@ def get_options():
     parser.add_argument(
         "--do-comparison",
         type=bool,
-        default=False,
+        default=True,
         help="Flag to choose if plot the all the trained models."
     )
 
@@ -118,7 +118,8 @@ def run_eval(options):
             PathBuilder.DQN_AGENT_LOG_DIR,
             PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR,
             PathBuilder.DUELING_DQN_AGENT_LOG_DIR,
-            PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR
+            PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR,
+            PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR
         ]
         compare_model_logs(dirs)
 
