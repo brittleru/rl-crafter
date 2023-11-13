@@ -35,6 +35,21 @@ class PathBuilder(Const):
     DUELING_DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "dueling_doubledqn_agent")
     RAINBOW_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(LOGDIR_DIR, "rainbow_agent")
 
+    HACKED_CHECKPOINTS_DIR: Final[str] = os.path.join(CHECKPOINTS_DIR, "hacked")
+    HACKED_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(HACKED_CHECKPOINTS_DIR, "dqn_agent")
+    HACKED_DOUBLE_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(HACKED_CHECKPOINTS_DIR, "doubledqn_agent")
+    HACKED_DUELING_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(HACKED_CHECKPOINTS_DIR, "duelingdqn_agent")
+    HACKED_DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(HACKED_CHECKPOINTS_DIR, "dueling_doubledqn_agent")
+    HACKED_RAINBOW_DQN_AGENT_CHECKPOINT_DIR: Final[str] = os.path.join(HACKED_CHECKPOINTS_DIR, "rainbow_agent")
+
+    HACKED_LOGDIR_DIR: Final[str] = os.path.join(LOGDIR_DIR, "hacked")
+    HACKED_RANDOM_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "random_agent")
+    HACKED_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "dqn_agent")
+    HACKED_DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "doubledqn_agent")
+    HACKED_DUELING_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "duelingdqn_agent")
+    HACKED_DUELING_DOUBLE_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "dueling_doubledqn_agent")
+    HACKED_RAINBOW_DQN_AGENT_LOG_DIR: Final[str] = os.path.join(HACKED_LOGDIR_DIR, "rainbow_agent")
+
     HYPER_PARAMETERS_PATH: Final[str] = os.path.join(PROJECT_DIR, "hyperparameters.json")
 
 
@@ -55,6 +70,8 @@ class AgentTypes(Const):
         PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR: RAINBOW
     }
 
+    HACKED_DQN: str = "HACKED-DQN"
+
 
 if __name__ == "__main__":
     print(PathBuilder.PROJECT_DIR)
@@ -74,5 +91,18 @@ if __name__ == "__main__":
     print(PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR)
     print(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR)
 
-    print(PathBuilder.HYPER_PARAMETERS_PATH)
+    print(PathBuilder.HACKED_CHECKPOINTS_DIR)
+    print(PathBuilder.HACKED_DQN_AGENT_CHECKPOINT_DIR)
+    print(PathBuilder.HACKED_DOUBLE_DQN_AGENT_CHECKPOINT_DIR)
+    print(PathBuilder.HACKED_LOGDIR_DIR)
+    print(PathBuilder.HACKED_RANDOM_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_DOUBLE_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_DUELING_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_DUELING_DQN_AGENT_CHECKPOINT_DIR)
+    print(PathBuilder.HACKED_DUELING_DOUBLE_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_DUELING_DOUBLE_DQN_AGENT_CHECKPOINT_DIR)
+    print(PathBuilder.HACKED_RAINBOW_DQN_AGENT_LOG_DIR)
+    print(PathBuilder.HACKED_RAINBOW_DQN_AGENT_CHECKPOINT_DIR)
+
     print(AgentTypes.PATH_TO_NAME)
