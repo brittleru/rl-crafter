@@ -333,7 +333,7 @@ if __name__ == "__main__":
     checkpoint_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR, "99")
 
     main(get_options(
-        agent_type=AgentTypes.RAINBOW,
-        log_dir=log_rainbow_dqn_path,
-        checkpoint_dir=checkpoint_rainbow_dqn_path
+        agent_type=AgentTypes.DQN,
+        log_dir=log_dqn_path,
+        checkpoint_dir=checkpoint_dqn_path
     ))
