@@ -233,9 +233,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Python generated files
-models/
-data/pretrained
-results/
-datasets/
-videos/
+# Python files
+*.pt
+*.pth
+*.zip

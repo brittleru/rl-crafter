@@ -1,8 +1,7 @@
-import torch
-import numpy as np
-
 from typing import Tuple
-from random import sample
+
+import numpy as np
+import torch
 
 
 class ReplayBuffer(object):

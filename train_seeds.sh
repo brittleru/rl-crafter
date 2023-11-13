@@ -6,5 +6,5 @@ ddqn="doubledqn_agent"
 dddqn="dueling_doubledqn_agent"
 
 for i in $(seq 0 4); do
-  python train.py --steps 250_000 --eval-interval 25_000 --logdir logdir/$dqn/"$i"
+  python train.py --steps 100_000 --eval-interval 10_000 --logdir logdir/$dqn/"$i"
 done
