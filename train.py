@@ -329,11 +329,11 @@ if __name__ == "__main__":
 
     # Rainbow DQN
     # AgentTypes.RAINBOW
-    log_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR, "99")
-    checkpoint_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR, "99")
+    log_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR, "2")
+    checkpoint_rainbow_dqn_path = os.path.join(PathBuilder.RAINBOW_DQN_AGENT_CHECKPOINT_DIR, "2")
 
     main(get_options(
-        agent_type=AgentTypes.DQN,
-        log_dir=log_dqn_path,
-        checkpoint_dir=checkpoint_dqn_path
+        agent_type=AgentTypes.RAINBOW,
+        log_dir=log_rainbow_dqn_path,
+        checkpoint_dir=checkpoint_rainbow_dqn_path
     ))
