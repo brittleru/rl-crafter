@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.utils.constant_builder import PathBuilder
+from src.utils.constant_builder import PathBuilder, AgentTypes
 from src.utils.string_utils import get_dir_name_as_img, get_dirs_name_as_img
 
 
@@ -23,9 +23,9 @@ def read_pkl(path):
 
 
 def read_crafter_logs(in_dir, clip=True):
-    in_dir = pathlib.Path(in_dir)
+    in_dir_par = pathlib.Path(in_dir)
     # read the pickles
-    filenames = sorted(list(in_dir.glob("**\\*\\eval_stats.pkl")))
+    filenames = sorted(list(in_dir_par.glob("**\\*\\eval_stats.pkl")))
     runs = []
     for idx, fn in enumerate(filenames):
         df = pd.DataFrame(columns=["step", "avg_return"], data=read_pkl(fn))
@@ -42,7 +42,8 @@ def read_crafter_logs(in_dir, clip=True):
     df = pd.concat(runs, ignore_index=True)
     sns.lineplot(x="step", y="avg_return", data=df)
     plt.grid(visible=True)
-    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir.__str__())))
+    plt.title(f"Average episodic reward for {AgentTypes.PATH_TO_NAME[in_dir]}")
+    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir_par.__str__())))
     plt.show()
 
 
