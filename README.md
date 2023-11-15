@@ -19,6 +19,7 @@ backbone of the DQN agent, the CNN architecture is similar with TinyVGG, then at
 fully connected layers. 
 
 ![DQN architecture](analysis/DeepQNetwork-Architecture.png)
+![DQN architecture Netron](analysis/model_vis_onnx.png)
 
 After having a strong baseline agent, we trained better versions of that agent with the same hyperparameters and 
 backbone neural network architectures such as:
