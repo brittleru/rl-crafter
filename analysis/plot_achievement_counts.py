@@ -50,6 +50,7 @@ if __name__ == '__main__':
     import os
     from src.utils.constant_builder import PathBuilder, AgentTypes
 
+    clip_to_num_seeds = 4
     in_dirs = [
         PathBuilder.RANDOM_AGENT_LOG_DIR,
         PathBuilder.DQN_AGENT_LOG_DIR,
@@ -76,5 +77,5 @@ if __name__ == '__main__':
             agent_dir=agent_dir,
             save_path=path_to_save,
             color=agent_color,
-            clip_seeds_to=3
+            clip_seeds_to=clip_to_num_seeds
         )

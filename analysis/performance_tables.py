@@ -87,6 +87,7 @@ def print_spectrum(agent_dirs: List[str], legend: Dict[str, str], clip_seeds_to:
 
 
 if __name__ == '__main__':
+    clip_to_num_seeds = 4
     in_dirs = [
         PathBuilder.RANDOM_AGENT_LOG_DIR,
         PathBuilder.DQN_AGENT_LOG_DIR,
@@ -105,7 +106,7 @@ if __name__ == '__main__':
         AgentTypes.RANDOM: "Random",
     }
     print("Agent Scores Table:")
-    print_scores(agent_dirs=in_dirs, legend=agent_legend, clip_seeds_to=2)
+    print_scores(agent_dirs=in_dirs, legend=agent_legend, clip_seeds_to=clip_to_num_seeds)
 
     print("\nAbility Spectrum Table:")
-    print_spectrum(agent_dirs=in_dirs, legend=agent_legend, clip_seeds_to=2)
+    print_spectrum(agent_dirs=in_dirs, legend=agent_legend, clip_seeds_to=clip_to_num_seeds)
