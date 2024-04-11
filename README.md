@@ -18,7 +18,8 @@ than the random agent. Since each input to the model are 4 gray scaled images, a
 backbone of the DQN agent, the CNN architecture is similar with TinyVGG, then at the classifier layer we used two
 fully connected layers. 
 
-(TODO: plot some visualization of the network)
+![DQN architecture](analysis/DeepQNetwork-Architecture.png)
+![DQN architecture Netron](analysis/model_vis_onnx.png)
 
 After having a strong baseline agent, we trained better versions of that agent with the same hyperparameters and 
 backbone neural network architectures such as:
@@ -28,17 +29,27 @@ backbone neural network architectures such as:
 * Rainbow C51DQN
 
 ## Results
-To visualize some results we chose to plot the average episodic reward for two or three seeds, the success rate for 
-each achievement of each agent as a table and as a histogram. (TODO: see if add some achievement curves and SUCCESS 
-RATES WITHOUT REWARDS table) 
+To visualize some results we chose to plot the average episodic reward for three seeds.
+![Average Episodic Reward for all trained models](analysis/eval_plots/random_agent_dqn_agent_doubledqn_agent_duelingdqn_agent_dueling_doubledqn_agent_rainbow_agent_all_results.png)
 
-(TODO: plot some visualization of the results)
+The score on Crafter for each trained agent over three seeds.
+![Agent Scores on Crafter](analysis/score_plots/agents_scores.png)
+
+The agent ability spectrum for each trained agents over all the success rates of each achievement.
+![Ability Spectrum for each agent](analysis/score_plots/agents_spectrum_all.png)
+
+Achievement counts for Dueling DQN agent, our best performing one.
+![Achievement counts for Dueling DQN agent](analysis/achievement_plots/counts_dueling-dqn.png)
 
 
 ## Hacking the environment with heuristics
-Since in a real-world RL scenario heuristics such as, avoid doing the same task over and over or find the resources 
-needed to avoid dying, would be used, we decided to also implement some.
-* TODO: add here some heuristics used
+Since in a real-world scenario heuristics such as, avoid doing the same task over and over or find the resources 
+needed to avoid dying would be likely used, for the future we would like to implement some heuristics:
+* Check if a unique achievement was made before taking an action (avoid crafting a wood pickaxe if we already have one)
+* Check if there is enough resources to craft
+* If the player is starving search for a cow or plant
+* Remember where he created some buildings
+* If he needs more water, repeat the action of drinking water.
 
 
 

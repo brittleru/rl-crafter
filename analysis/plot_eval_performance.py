@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.utils.constant_builder import PathBuilder
+from src.utils.constant_builder import PathBuilder, AgentTypes
 from src.utils.string_utils import get_dir_name_as_img, get_dirs_name_as_img
 
 
@@ -23,9 +23,9 @@ def read_pkl(path):
 
 
 def read_crafter_logs(in_dir, clip=True):
-    in_dir = pathlib.Path(in_dir)
+    in_dir_par = pathlib.Path(in_dir)
     # read the pickles
-    filenames = sorted(list(in_dir.glob("**\\*\\eval_stats.pkl")))
+    filenames = sorted(list(in_dir_par.glob("**\\*\\eval_stats.pkl")))
     runs = []
     for idx, fn in enumerate(filenames):
         df = pd.DataFrame(columns=["step", "avg_return"], data=read_pkl(fn))
@@ -42,13 +42,16 @@ def read_crafter_logs(in_dir, clip=True):
     df = pd.concat(runs, ignore_index=True)
     sns.lineplot(x="step", y="avg_return", data=df)
     plt.grid(visible=True)
-    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir.__str__())))
+    plt.title(f"Average episodic reward for {AgentTypes.PATH_TO_NAME[in_dir]}")
+    plt.savefig(os.path.join(PathBuilder.EVAL_PLOTS_DIR, get_dir_name_as_img(in_dir_par.__str__())))
     plt.show()
 
 
 def compare_model_logs(in_dirs: list, clip=True):
     model_names = []
     agent_colors = {}
+    if len(in_dirs) > 4:
+        plt.figure(figsize=(14, 7))
 
     for in_dir in in_dirs:
         in_dir = pathlib.Path(in_dir)
@@ -71,6 +74,7 @@ def compare_model_logs(in_dirs: list, clip=True):
         line = sns.lineplot(x="step", y="avg_return", data=df)
         line_color = line.get_lines()[-1].get_color()
         agent_colors[model_name] = line_color
+
 
     handles = [plt.Line2D([0], [0], color=agent_colors[model_name], label=model_name) for model_name in model_names]
     plt.legend(handles=handles, title="Agent name")
@@ -100,17 +104,37 @@ def get_options():
     )
 
     parser.add_argument(
+        "--do-all-logs",
+        type=bool,
+        default=True,
+        help="Flag to choose if plot all the trained models.",
+    )
+
+    parser.add_argument(
         "--do-comparison",
         type=bool,
         default=True,
-        help="Flag to choose if plot the all the trained models."
+        help="Flag to choose if plot all the trained models in comparison."
     )
 
     return parser.parse_args()
 
 
 def run_eval(options):
-    read_crafter_logs(options.logdir)
+    dirs = [
+        PathBuilder.RANDOM_AGENT_LOG_DIR,
+        PathBuilder.DQN_AGENT_LOG_DIR,
+        PathBuilder.DOUBLE_DQN_AGENT_LOG_DIR,
+        PathBuilder.DUELING_DQN_AGENT_LOG_DIR,
+        PathBuilder.DUELING_DOUBLE_DQN_AGENT_LOG_DIR,
+        PathBuilder.RAINBOW_DQN_AGENT_LOG_DIR
+    ]
+
+    if options.do_all_logs:
+        for logdir in dirs:
+            read_crafter_logs(logdir)
+    else:
+        read_crafter_logs(options.logdir)
 
     if options.do_comparison:
         dirs = [
